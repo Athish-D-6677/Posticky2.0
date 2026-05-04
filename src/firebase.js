@@ -7,7 +7,7 @@ const firebaseConfig = {
   apiKey: "AIzaSyADyGJIFevRJ8ufqwq9aGxZW82H7TBmssE",
   authDomain: "posticky-84758.firebaseapp.com",
   projectId: "posticky-84758",
-  storageBucket: "posticky-84758.firebasestorage.app",
+  storageBucket: "posticky-84758.appspot.com",
   messagingSenderId: "641261565855",
   appId: "1:641261565855:web:f368032910c23118d82faa",
   measurementId: "G-DKLC7Y5GJP"

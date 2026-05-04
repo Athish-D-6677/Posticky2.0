@@ -12,9 +12,16 @@ import { motion } from 'framer-motion'
 const TSHIRT_SIZES = ['S', 'M', 'L', 'XL', 'XXL']
 const STICKER_SIZES = ['30x30cm', '45x45cm', '60x60cm', '90x90cm']
 
+const THEMES = [
+  'Movie', 'Series', 'Music', 'Car', 'Bike', 'Gaming', 'Anime',
+  'Quotes', 'Gym', 'Sports', 'Superheroes', 'Nature', 'Mandala',
+  'Abstract', 'Minimal', 'Vintage', 'Combo',
+]
+
 const defaultForm = {
   name: '',
   category: 'wall-sticker',
+  theme: '',
   price: '',
   originalPrice: '',
   stock: '',
@@ -54,6 +61,7 @@ export default function AddProduct() {
             stock: d.stock || '',
             description: d.description || '',
             tags: d.tags?.join(', ') || '',
+            theme: d.theme || '',
             isActive: d.isActive ?? true,
             variants: d.variants || defaultForm.variants,
           })
@@ -108,6 +116,7 @@ export default function AddProduct() {
         stock: Number(form.stock),
         description: form.description,
         tags: form.tags.split(',').map((t) => t.trim()).filter(Boolean),
+        theme: form.theme,
         isActive: form.isActive,
         variants: form.variants,
         images: [...existingImages, ...uploadedUrls],
@@ -156,10 +165,16 @@ export default function AddProduct() {
             required
             className="input"
           />
-          <select value={form.category} onChange={set('category')} className="input">
-            <option value="wall-sticker">Wall Sticker</option>
-            <option value="tshirt">T-Shirt</option>
-          </select>
+          <div className="grid grid-cols-2 gap-3">
+            <select value={form.category} onChange={set('category')} className="input">
+              <option value="wall-sticker">Wall Sticker</option>
+              <option value="tshirt">T-Shirt</option>
+            </select>
+            <select value={form.theme} onChange={set('theme')} className="input">
+              <option value="">Select Theme</option>
+              {THEMES.map(t => <option key={t} value={t.toLowerCase()}>{t}</option>)}
+            </select>
+          </div>
           <div className="grid grid-cols-3 gap-3">
             <input type="number" placeholder="Price ₹ *" value={form.price} onChange={set('price')} required className="input" />
             <input type="number" placeholder="MRP ₹" value={form.originalPrice} onChange={set('originalPrice')} className="input" />

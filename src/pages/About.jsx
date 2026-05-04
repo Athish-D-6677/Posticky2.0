@@ -30,9 +30,9 @@ const VALUES = [
 ]
 
 const TEAM = [
-  { initials: 'AK', name: 'Arjun K.', role: 'Founder & Designer', color: '#00ff88' },
-  { initials: 'SR', name: 'Sneha R.', role: 'Creative Head', color: '#ff2d78' },
-  { initials: 'VT', name: 'Vikram T.', role: 'Operations', color: '#00d4ff' },
+  { initials: 'AT', name: 'Athish D.', role: 'Founder & Designer', color: '#00ff88' },
+  { initials: 'AT', name: 'Athish D.', role: 'Creative Head', color: '#ff2d78' },
+  { initials: 'AT', name: 'Athish D.', role: 'Operations', color: '#00d4ff' },
 ]
 
 export default function About() {
