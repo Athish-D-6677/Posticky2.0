@@ -28,7 +28,6 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 
 // Admin pages
-import AdminLogin from './admin/AdminLogin'
 import Dashboard from './admin/Dashboard'
 import Products from './admin/Products'
 import AddProduct from './admin/AddProduct'
@@ -75,7 +74,6 @@ export default function App() {
             <Route path="/wishlist" element={<CustomerLayout><PrivateRoute><Wishlist /></PrivateRoute></CustomerLayout>} />
 
             {/* Admin routes */}
-            <Route path="/admin/login" element={<AdminLogin />} />
             <Route path="/admin/dashboard" element={<AdminRoute><AdminLayout><Dashboard /></AdminLayout></AdminRoute>} />
             <Route path="/admin/products" element={<AdminRoute><AdminLayout><Products /></AdminLayout></AdminRoute>} />
             <Route path="/admin/products/add" element={<AdminRoute><AdminLayout><AddProduct /></AdminLayout></AdminRoute>} />

@@ -1,257 +1,164 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  sendPasswordResetEmail,
+  updateProfile,
+} from 'firebase/auth'
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore'
+import { auth, googleProvider, db } from '../firebase'
 import { motion } from 'framer-motion'
 
 export default function Login() {
-  const { login, signup, loginWithGoogle } = useAuth()
   const navigate = useNavigate()
-
-  const [mode, setMode] = useState('login') // 'login' | 'signup'
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [name, setName] = useState('')
+  const [mode, setMode] = useState('login') // login | signup | forgot
+  const [form, setForm] = useState({ name: '', email: '', password: '' })
   const [error, setError] = useState('')
+  const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const set = (k) => (e) => setForm({ ...form, [k]: e.target.value })
+
+  // After login check claim + Firestore role and redirect accordingly
+  const redirectByRole = async (firebaseUser) => {
+    const token = await firebaseUser.getIdTokenResult(true)
+    if (token.claims.admin) {
+      navigate('/admin/dashboard', { replace: true })
+      return
+    }
+    // Fallback: check Firestore role
+    const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid))
+    if (userDoc.exists() && userDoc.data().role === 'admin') {
+      navigate('/admin/dashboard', { replace: true })
+    } else {
+      navigate('/', { replace: true })
+    }
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
+    setInfo('')
     setLoading(true)
     try {
       if (mode === 'login') {
-        await login(email, password)
+        const cred = await signInWithEmailAndPassword(auth, form.email, form.password)
+        await redirectByRole(cred.user)
+      } else if (mode === 'signup') {
+        const cred = await createUserWithEmailAndPassword(auth, form.email, form.password)
+        await updateProfile(cred.user, { displayName: form.name })
+        await setDoc(doc(db, 'users', cred.user.uid), {
+          name: form.name,
+          email: form.email,
+          phone: '',
+          role: 'user',
+          addresses: [],
+          wishlist: [],
+          createdAt: serverTimestamp(),
+        })
+        await redirectByRole(cred.user)
       } else {
-        await signup(email, password, name)
+        await sendPasswordResetEmail(auth, form.email)
+        setInfo('Password reset email sent! Check your inbox.')
       }
-      navigate('/')
     } catch (err) {
-      setError(err.message?.replace('Firebase: ', '') || 'Something went wrong.')
+      setError(err.message.replace('Firebase: ', '').replace(/\(.*\)/, '').trim())
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const handleGoogle = async () => {
     setError('')
     setLoading(true)
     try {
-      await loginWithGoogle()
-      navigate('/')
+      const cred = await signInWithPopup(auth, googleProvider)
+      await setDoc(doc(db, 'users', cred.user.uid), {
+        name: cred.user.displayName,
+        email: cred.user.email,
+        phone: '',
+        role: 'user',
+        addresses: [],
+        wishlist: [],
+        createdAt: serverTimestamp(),
+      }, { merge: true })
+      await redirectByRole(cred.user)
     } catch (err) {
-      setError(err.message?.replace('Firebase: ', '') || 'Google sign-in failed.')
+      setError(err.message.replace('Firebase: ', '').replace(/\(.*\)/, '').trim())
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
-    <div
-      style={{ background: '#080808', minHeight: '100vh' }}
-      className="flex items-center justify-center px-4 py-16"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center px-4"
     >
-      {/* Background grid */}
-      <div
-        className="fixed inset-0 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(0,255,136,0.02) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(0,255,136,0.02) 1px, transparent 1px)
-          `,
-          backgroundSize: '60px 60px',
-        }}
-      />
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8 w-full max-w-md">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1 text-center">
+          {mode === 'login' ? 'Welcome Back' : mode === 'signup' ? 'Create Account' : 'Reset Password'}
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+          {mode === 'login' ? 'Sign in to continue to Posticky' : mode === 'signup' ? 'Join the Posticky family' : 'Enter your email to reset password'}
+        </p>
 
-      {/* Glow orbs */}
-      <div className="fixed top-1/3 left-1/4 w-96 h-96 rounded-full opacity-5 blur-3xl pointer-events-none" style={{ background: '#00ff88' }} />
-      <div className="fixed bottom-1/4 right-1/4 w-80 h-80 rounded-full opacity-5 blur-3xl pointer-events-none" style={{ background: '#ff2d78' }} />
+        {error && <p className="text-red-500 text-sm mb-4 text-center bg-red-50 dark:bg-red-900/20 py-2 px-3 rounded-xl">{error}</p>}
+        {info && <p className="text-green-600 text-sm mb-4 text-center bg-green-50 dark:bg-green-900/20 py-2 px-3 rounded-xl">{info}</p>}
 
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="relative w-full max-w-md"
-      >
-        {/* Card */}
-        <div
-          className="rounded-3xl p-8 md:p-10"
-          style={{
-            background: 'rgba(17,17,17,0.95)',
-            border: '1px solid rgba(0,255,136,0.15)',
-            backdropFilter: 'blur(20px)',
-          }}
-        >
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center gap-1 mb-6">
-              <span style={{ fontFamily: 'Syne, sans-serif', color: '#00ff88', fontSize: '1.5rem', fontWeight: 800, letterSpacing: '0.15em', textShadow: '0 0 20px rgba(0,255,136,0.5)' }}>POST</span>
-              <span style={{ fontFamily: 'Syne, sans-serif', color: '#f0f0f0', fontSize: '1.5rem', fontWeight: 800, letterSpacing: '0.15em' }}>ICKY</span>
-            </Link>
-            <h1
-              className="text-2xl font-extrabold mt-2"
-              style={{ fontFamily: 'Syne, sans-serif', color: '#f0f0f0' }}
-            >
-              {mode === 'login' ? 'Welcome back' : 'Create account'}
-            </h1>
-            <p className="text-sm mt-1" style={{ color: '#666', fontFamily: 'DM Sans, sans-serif' }}>
-              {mode === 'login' ? 'Sign in to your Posticky account' : 'Join the Posticky family'}
-            </p>
-          </div>
-
-          {/* Mode toggle */}
-          <div
-            className="flex rounded-xl p-1 mb-6"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
-          >
-            {['login', 'signup'].map((m) => (
-              <button
-                key={m}
-                onClick={() => { setMode(m); setError('') }}
-                className="flex-1 py-2 rounded-lg text-sm font-bold transition-all duration-200"
-                style={{
-                  fontFamily: 'Syne, sans-serif',
-                  background: mode === m ? 'rgba(0,255,136,0.12)' : 'transparent',
-                  color: mode === m ? '#00ff88' : '#666',
-                  border: mode === m ? '1px solid rgba(0,255,136,0.25)' : '1px solid transparent',
-                }}
-              >
-                {m === 'login' ? 'Sign In' : 'Sign Up'}
-              </button>
-            ))}
-          </div>
-
-          {/* Google button */}
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {mode === 'signup' && (
+            <input type="text" placeholder="Full Name" value={form.name} onChange={set('name')} required className="input" />
+          )}
+          <input type="email" placeholder="Email" value={form.email} onChange={set('email')} required className="input" />
+          {mode !== 'forgot' && (
+            <input type="password" placeholder="Password" value={form.password} onChange={set('password')} required className="input" />
+          )}
           <button
-            onClick={handleGoogle}
+            type="submit"
             disabled={loading}
-            className="w-full flex items-center justify-center gap-3 py-3 rounded-xl mb-5 text-sm font-medium transition-all duration-200"
-            style={{
-              background: 'rgba(255,255,255,0.04)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: '#ccc',
-              fontFamily: 'DM Sans, sans-serif',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.08)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.2)' }}
-            onMouseLeave={e => { e.currentTarget.style.background = 'rgba(255,255,255,0.04)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)' }}
+            className="bg-primary text-white py-2.5 rounded-xl font-semibold hover:opacity-90 transition disabled:opacity-50"
           >
-            {/* Google SVG */}
-            <svg width="18" height="18" viewBox="0 0 48 48">
-              <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.1 29.3 35 24 35c-6.1 0-11-4.9-11-11s4.9-11 11-11c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.1 29 5 24 5 12.9 5 4 13.9 4 25s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/>
-              <path fill="#FF3D00" d="M6.3 15.1l6.6 4.8C14.5 16.1 18.9 13 24 13c2.8 0 5.3 1 7.2 2.7l5.7-5.7C33.5 7.1 29 5 24 5 16.3 5 9.6 9.1 6.3 15.1z"/>
-              <path fill="#4CAF50" d="M24 45c5 0 9.4-1.9 12.8-4.9l-5.9-5c-1.8 1.3-4.1 2-6.9 2-5.2 0-9.6-3.5-11.2-8.3l-6.5 5C9.5 40.7 16.2 45 24 45z"/>
-              <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.3 4.1-4.2 5.4l5.9 5C36.9 39.6 44 34 44 25c0-1.3-.1-2.6-.4-3.9z"/>
-            </svg>
-            Continue with Google
+            {loading ? 'Please wait...' : mode === 'login' ? 'Sign In' : mode === 'signup' ? 'Sign Up' : 'Send Reset Email'}
           </button>
+        </form>
 
-          {/* Divider */}
-          <div className="flex items-center gap-3 mb-5">
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
-            <span className="text-xs" style={{ color: '#444', fontFamily: 'DM Sans, sans-serif' }}>or</span>
-            <div className="flex-1 h-px" style={{ background: 'rgba(255,255,255,0.07)' }} />
-          </div>
-
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {mode === 'signup' && (
-              <div>
-                <label className="text-xs font-bold mb-1.5 block" style={{ color: '#888', fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em' }}>
-                  FULL NAME
-                </label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  placeholder="Your name"
-                  required
-                  className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-                  style={{
-                    background: 'rgba(255,255,255,0.04)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    color: '#f0f0f0',
-                    fontFamily: 'DM Sans, sans-serif',
-                  }}
-                  onFocus={e => { e.target.style.borderColor = 'rgba(0,255,136,0.4)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,255,136,0.06)' }}
-                  onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.boxShadow = 'none' }}
-                />
-              </div>
-            )}
-
-            <div>
-              <label className="text-xs font-bold mb-1.5 block" style={{ color: '#888', fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em' }}>
-                EMAIL
-              </label>
-              <input
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                required
-                className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#f0f0f0',
-                  fontFamily: 'DM Sans, sans-serif',
-                }}
-                onFocus={e => { e.target.style.borderColor = 'rgba(0,255,136,0.4)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,255,136,0.06)' }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.boxShadow = 'none' }}
-              />
+        {mode !== 'forgot' && (
+          <>
+            <div className="my-4 flex items-center gap-3">
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
+              <span className="text-xs text-gray-400">or</span>
+              <div className="flex-1 h-px bg-gray-200 dark:bg-gray-700" />
             </div>
-
-            <div>
-              <label className="text-xs font-bold mb-1.5 block" style={{ color: '#888', fontFamily: 'Syne, sans-serif', letterSpacing: '0.08em' }}>
-                PASSWORD
-              </label>
-              <input
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="••••••••"
-                required
-                className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all duration-200"
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#f0f0f0',
-                  fontFamily: 'DM Sans, sans-serif',
-                }}
-                onFocus={e => { e.target.style.borderColor = 'rgba(0,255,136,0.4)'; e.target.style.boxShadow = '0 0 0 3px rgba(0,255,136,0.06)' }}
-                onBlur={e => { e.target.style.borderColor = 'rgba(255,255,255,0.1)'; e.target.style.boxShadow = 'none' }}
-              />
-            </div>
-
-            {error && (
-              <p
-                className="text-xs px-4 py-3 rounded-xl"
-                style={{ color: '#ff6b6b', background: 'rgba(255,45,120,0.08)', border: '1px solid rgba(255,45,120,0.2)', fontFamily: 'DM Sans, sans-serif' }}
-              >
-                {error}
-              </p>
-            )}
-
             <button
-              type="submit"
+              onClick={handleGoogle}
               disabled={loading}
-              className="btn-neon w-full py-3.5 text-sm mt-1"
-              style={{ opacity: loading ? 0.7 : 1 }}
+              className="w-full border border-gray-200 dark:border-gray-600 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition flex items-center justify-center gap-2"
             >
-              {loading ? 'Please wait...' : mode === 'login' ? 'Sign In →' : 'Create Account →'}
+              <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="" />
+              Continue with Google
             </button>
-          </form>
+          </>
+        )}
 
+        <div className="mt-4 text-center text-sm text-gray-500 dark:text-gray-400 flex flex-col gap-1">
           {mode === 'login' && (
-            <p className="text-center text-xs mt-4" style={{ color: '#555', fontFamily: 'DM Sans, sans-serif' }}>
-              Don't have an account?{' '}
-              <button
-                onClick={() => { setMode('signup'); setError('') }}
-                style={{ color: '#00ff88' }}
-                className="font-medium"
-              >
-                Sign up free
-              </button>
-            </p>
+            <>
+              <button onClick={() => { setMode('forgot'); setError('') }} className="hover:underline">Forgot password?</button>
+              <button onClick={() => { setMode('signup'); setError('') }} className="hover:underline">Don't have an account? Sign up</button>
+            </>
+          )}
+          {mode === 'signup' && (
+            <button onClick={() => { setMode('login'); setError('') }} className="hover:underline">Already have an account? Sign in</button>
+          )}
+          {mode === 'forgot' && (
+            <button onClick={() => { setMode('login'); setError('') }} className="hover:underline">Back to sign in</button>
           )}
         </div>
-      </motion.div>
-    </div>
+      </div>
+    </motion.div>
   )
 }

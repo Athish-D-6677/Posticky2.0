@@ -1,20 +1,22 @@
-const admin = require("firebase-admin");
+const admin = require('firebase-admin')
+const serviceAccount = require('./serviceAccountKey.json')
 
-// path to your downloaded JSON
-const serviceAccount = require("../serviceAccountKey.json");
+admin.initializeApp({ credential: admin.credential.cert(serviceAccount) })
 
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-});
+const ADMIN_UID = 'QDhcnJZyioYtj6uGyWodtjoLUuG2'
 
-const uid = "97S63PCvYgUdXwphn7fE00gIdeS2"; // from Firebase console
+async function run() {
+  await admin.auth().setCustomUserClaims(ADMIN_UID, { admin: true })
+  console.log('✅ Admin claim SET for UID:', ADMIN_UID)
 
-admin.auth().setCustomUserClaims(uid, { admin: true })
-  .then(() => {
-    console.log("✅ Admin role assigned");
-    process.exit();
-  })
-  .catch((error) => {
-    console.error("❌ Error:", error);
-    process.exit(1);
-  });
+  const user = await admin.auth().getUser(ADMIN_UID)
+  console.log('✅ Verified claims:', JSON.stringify(user.customClaims))
+  console.log('✅ Email:', user.email)
+  console.log('\nDone! Now sign out and sign back in at /admin/login')
+  process.exit(0)
+}
+
+run().catch((err) => {
+  console.error('❌ Error:', err.message)
+  process.exit(1)
+})
