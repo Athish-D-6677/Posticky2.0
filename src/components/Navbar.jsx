@@ -143,6 +143,15 @@ export default function Navbar() {
           {user ? (
             <div className="hidden lg:flex items-center gap-2">
               <Link
+                to="/my-orders"
+                className="text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-200"
+                style={{ color: '#ccc', fontFamily: 'DM Sans, sans-serif' }}
+                onMouseEnter={e => e.currentTarget.style.color = '#00ff88'}
+                onMouseLeave={e => e.currentTarget.style.color = '#ccc'}
+              >
+                My Orders
+              </Link>
+              <Link
                 to="/account"
                 className="text-sm font-medium px-3 py-1.5 rounded-lg transition-all duration-200 max-w-[120px] truncate"
                 style={{ color: '#ccc', fontFamily: 'DM Sans, sans-serif' }}
@@ -211,13 +220,13 @@ export default function Navbar() {
             </Link>
           ))}
           <div className="mt-3 pt-3 flex flex-col gap-1" style={{ borderTop: '1px solid rgba(255,255,255,0.06)' }}>
-            {user ? (
-              <>
-                <Link to="/account" className="px-3 py-2.5 rounded-xl text-sm" style={{ color: '#aaa', fontFamily: 'DM Sans' }}>My Account</Link>
-                <Link to="/my-orders" className="px-3 py-2.5 rounded-xl text-sm" style={{ color: '#aaa', fontFamily: 'DM Sans' }}>My Orders</Link>
-                <Link to="/wishlist" className="px-3 py-2.5 rounded-xl text-sm" style={{ color: '#aaa', fontFamily: 'DM Sans' }}>Wishlist</Link>
-                <button onClick={handleLogout} className="text-left px-3 py-2.5 rounded-xl text-sm" style={{ color: '#ff2d78', fontFamily: 'DM Sans' }}>Logout</button>
-              </>
+          {user ? (
+            <>
+                <Link to="/my-orders" className="px-3 py-2.5 rounded-xl text-sm font-medium" style={{ color: isActive('/my-orders') ? '#00ff88' : '#aaa', background: isActive('/my-orders') ? 'rgba(0,255,136,0.08)' : 'transparent', fontFamily: 'DM Sans' }}>📦 My Orders</Link>
+                <Link to="/account" className="px-3 py-2.5 rounded-xl text-sm" style={{ color: '#aaa', fontFamily: 'DM Sans' }}>👤 My Account</Link>
+                <Link to="/wishlist" className="px-3 py-2.5 rounded-xl text-sm" style={{ color: '#aaa', fontFamily: 'DM Sans' }}>❤️ Wishlist</Link>
+                <button onClick={handleLogout} className="text-left px-3 py-2.5 rounded-xl text-sm" style={{ color: '#ff2d78', fontFamily: 'DM Sans' }}>🚪 Logout</button>
+            </>
             ) : (
               <Link to="/login" className="btn-neon text-center text-sm py-3">Login / Sign Up</Link>
             )}
