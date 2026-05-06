@@ -24,6 +24,7 @@ export default function ProductDetail() {
   const [toast, setToast] = useState({ msg: '', type: 'success' })
   const [wishlisted, setWishlisted] = useState(false)
   const [adding, setAdding] = useState(false)
+  const [lightbox, setLightbox] = useState(false)
 
   useEffect(() => {
     const load = async () => {
@@ -162,14 +163,28 @@ export default function ProductDetail() {
 
       <div className="relative max-w-6xl mx-auto px-4 py-10">
 
-        {/* Breadcrumb */}
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2 mb-8 text-xs" style={{ color: '#444', fontFamily: 'DM Sans, sans-serif' }}>
-          <button onClick={() => navigate('/shop')} style={{ color: '#555' }}
-            onMouseEnter={e => e.currentTarget.style.color = '#00ff88'}
-            onMouseLeave={e => e.currentTarget.style.color = '#555'}
-          >Shop</button>
-          <span>/</span>
-          <span style={{ color: '#888' }}>{product.name}</span>
+        {/* Back button + Breadcrumb */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-3 mb-8">
+          <button
+            onClick={() => navigate(-1)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all duration-200"
+            style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', color: '#888', fontFamily: 'Syne, sans-serif' }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = 'rgba(0,255,136,0.4)'; e.currentTarget.style.color = '#00ff88' }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.color = '#888' }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+            Back
+          </button>
+          <div className="flex items-center gap-2 text-xs" style={{ color: '#444', fontFamily: 'DM Sans, sans-serif' }}>
+            <button onClick={() => navigate('/shop')} style={{ color: '#555' }}
+              onMouseEnter={e => e.currentTarget.style.color = '#00ff88'}
+              onMouseLeave={e => e.currentTarget.style.color = '#555'}
+            >Shop</button>
+            <span>/</span>
+            <span style={{ color: '#888' }}>{product.name}</span>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-16">
@@ -178,14 +193,18 @@ export default function ProductDetail() {
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
             {/* Main image */}
             <div
-              className="relative overflow-hidden rounded-3xl mb-3"
+              className="relative overflow-hidden rounded-3xl mb-3 cursor-zoom-in"
               style={{ aspectRatio: '1/1', background: '#111', border: '1px solid rgba(255,255,255,0.07)' }}
+              onClick={() => setLightbox(true)}
             >
               <img
                 src={product.images?.[selectedImage] || 'https://placehold.co/600x600/111/333?text=POSTICKY'}
                 alt={product.name}
                 className="w-full h-full object-cover transition-all duration-500"
               />
+              <div className="absolute bottom-3 right-3 px-2 py-1 rounded-lg text-xs font-bold" style={{ background: 'rgba(0,0,0,0.6)', color: '#aaa', backdropFilter: 'blur(10px)', fontFamily: 'Syne, sans-serif' }}>
+                🔍 Click to zoom
+              </div>
               {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 {discount && (
@@ -547,6 +566,68 @@ export default function ProductDetail() {
           </AnimatePresence>
         </motion.div>
       </div>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightbox && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(20px)' }}
+            onClick={() => setLightbox(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.9 }}
+              className="relative max-w-3xl w-full"
+              onClick={e => e.stopPropagation()}
+            >
+              <img
+                src={product.images?.[selectedImage]}
+                alt={product.name}
+                className="w-full rounded-2xl object-contain"
+                style={{ maxHeight: '80vh' }}
+              />
+              {/* Close */}
+              <button
+                onClick={() => setLightbox(false)}
+                className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full"
+                style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              {/* Prev / Next arrows for multiple images */}
+              {product.images?.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImage(i => (i - 1 + product.images.length) % product.images.length)}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full"
+                    style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setSelectedImage(i => (i + 1) % product.images.length)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full"
+                    style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }

@@ -14,6 +14,7 @@ import Home from './pages/Home'
 import Shop from './pages/Shop'
 import Stickers from './pages/Stickers'
 import Tshirts from './pages/Tshirts'
+import Anime from './pages/Anime'
 import ProductDetail from './pages/ProductDetail'
 import Login from './pages/Login'
 import Unauthorized from './pages/Unauthorized'
@@ -58,6 +59,7 @@ export default function App() {
             <Route path="/shop" element={<CustomerLayout><Shop /></CustomerLayout>} />
             <Route path="/stickers" element={<CustomerLayout><Stickers /></CustomerLayout>} />
             <Route path="/tshirts" element={<CustomerLayout><Tshirts /></CustomerLayout>} />
+            <Route path="/anime" element={<CustomerLayout><Anime /></CustomerLayout>} />
             <Route path="/product/:id" element={<CustomerLayout><ProductDetail /></CustomerLayout>} />
             <Route path="/login" element={<CustomerLayout><Login /></CustomerLayout>} />
             <Route path="/unauthorized" element={<CustomerLayout><Unauthorized /></CustomerLayout>} />

@@ -72,6 +72,201 @@ const stickers = [
   },
 ]
 
+const anime = [
+  {
+    name: 'Naruto Kunai Wall Sticker',
+    price: 349, originalPrice: 549, stock: 60,
+    description: 'Iconic Naruto kunai and leaf village symbol sticker for anime fans.',
+    tags: ['naruto', 'anime', 'ninja'],
+    images: ['https://cdn.myanimelist.net/images/anime/1141/142503.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Dragon Ball Z Scouter Sticker',
+    price: 299, originalPrice: 499, stock: 75,
+    description: 'DBZ scouter design wall sticker. Power level over 9000!',
+    tags: ['dragonball', 'anime', 'dbz'],
+    images: ['https://cdn.myanimelist.net/images/anime/1277/142022.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Attack on Titan Survey Corps Sticker',
+    price: 379, originalPrice: 599, stock: 45,
+    description: 'Survey Corps wings of freedom emblem wall sticker.',
+    tags: ['aot', 'anime', 'survey corps'],
+    images: ['https://cdn.myanimelist.net/images/anime/10/47347.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'One Piece Jolly Roger Sticker',
+    price: 319, originalPrice: 519, stock: 55,
+    description: 'Straw Hat Pirates Jolly Roger wall sticker for One Piece fans.',
+    tags: ['one piece', 'anime', 'luffy'],
+    images: ['https://cdn.myanimelist.net/images/anime/6/73245.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Demon Slayer Breathing Form Sticker',
+    price: 399, originalPrice: 649, stock: 40,
+    description: 'Tanjiro water breathing form silhouette wall sticker.',
+    tags: ['demon slayer', 'anime', 'tanjiro'],
+    images: ['https://cdn.myanimelist.net/images/anime/1286/99889.jpg'],
+    variants: { stickerSizes: ['45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'My Hero Academia Plus Ultra Sticker',
+    price: 329, originalPrice: 529, stock: 65,
+    description: 'Plus Ultra! MHA hero emblems wall sticker set.',
+    tags: ['mha', 'anime', 'hero'],
+    images: ['https://cdn.myanimelist.net/images/anime/10/78745.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Totoro Forest Spirit Sticker',
+    price: 359, originalPrice: 579, stock: 70,
+    description: 'Adorable Totoro and friends wall sticker. Perfect for kids rooms.',
+    tags: ['ghibli', 'totoro', 'anime'],
+    images: ['https://cdn.myanimelist.net/images/anime/4/75923.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'Sword Art Online Kirito Sticker',
+    price: 349, originalPrice: 549, stock: 50,
+    description: 'Kirito dual-wielding silhouette wall sticker for SAO fans.',
+    tags: ['sao', 'anime', 'kirito'],
+    images: ['https://cdn.myanimelist.net/images/anime/11/39717.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Custom Anime Quote Sticker',
+    price: 429, originalPrice: 679, stock: 90,
+    description: 'Personalized anime-style quote wall sticker in your chosen size.',
+    tags: ['custom', 'anime', 'quote'],
+    images: ['https://cdn.myanimelist.net/images/anime/1337/99013.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm', '90x90cm'], allowCustomText: true, customTextLabel: 'Enter your anime quote' },
+  },
+  {
+    name: 'Fullmetal Alchemist Transmutation Circle Sticker',
+    price: 389, originalPrice: 629, stock: 35,
+    description: 'Detailed FMA transmutation circle wall sticker. Intricate alchemist design.',
+    tags: ['fma', 'anime', 'alchemist'],
+    images: ['https://cdn.myanimelist.net/images/anime/1223/96541.jpg'],
+    variants: { stickerSizes: ['45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'Jujutsu Kaisen Cursed Energy Sticker',
+    price: 369, originalPrice: 579, stock: 55,
+    description: 'Gojo and Yuji cursed energy aura wall sticker for JJK fans.',
+    tags: ['jjk', 'anime', 'gojo'],
+    images: ['https://cdn.myanimelist.net/images/anime/1171/109222.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Tokyo Ghoul Kaneki Mask Sticker',
+    price: 339, originalPrice: 539, stock: 48,
+    description: 'Ken Kaneki iconic half-mask design wall sticker.',
+    tags: ['tokyo ghoul', 'anime', 'kaneki'],
+    images: ['https://cdn.myanimelist.net/images/anime/5/64449.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Hunter x Hunter Killua Sticker',
+    price: 359, originalPrice: 569, stock: 42,
+    description: 'Killua lightning aura silhouette wall sticker for HxH fans.',
+    tags: ['hxh', 'anime', 'killua'],
+    images: ['https://cdn.myanimelist.net/images/anime/1337/142503.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'Bleach Ichigo Bankai Sticker',
+    price: 379, originalPrice: 599, stock: 38,
+    description: 'Ichigo Kurosaki Bankai form wall sticker. Epic design for Bleach fans.',
+    tags: ['bleach', 'anime', 'ichigo'],
+    images: ['https://cdn.myanimelist.net/images/anime/3/40451.jpg'],
+    variants: { stickerSizes: ['45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'Death Note L vs Light Sticker',
+    price: 349, originalPrice: 549, stock: 52,
+    description: 'Iconic L and Light silhouette chess match wall sticker.',
+    tags: ['death note', 'anime', 'light'],
+    images: ['https://cdn.myanimelist.net/images/anime/9/9453.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Cowboy Bebop Space Jazz Sticker',
+    price: 329, originalPrice: 529, stock: 30,
+    description: 'Spike Spiegel retro space cowboy wall sticker. See you space cowboy.',
+    tags: ['cowboy bebop', 'anime', 'spike'],
+    images: ['https://cdn.myanimelist.net/images/anime/4/19644.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Evangelion Unit-01 Sticker',
+    price: 399, originalPrice: 649, stock: 28,
+    description: 'Neon Genesis Evangelion Unit-01 mech wall sticker. Iconic sci-fi anime art.',
+    tags: ['evangelion', 'anime', 'mecha'],
+    images: ['https://cdn.myanimelist.net/images/anime/1314/108941.jpg'],
+    variants: { stickerSizes: ['45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'Chainsaw Man Denji Sticker',
+    price: 369, originalPrice: 579, stock: 45,
+    description: 'Denji chainsaw transformation wall sticker for Chainsaw Man fans.',
+    tags: ['chainsaw man', 'anime', 'denji'],
+    images: ['https://cdn.myanimelist.net/images/anime/1806/126216.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Spy x Family Anya Reaction Sticker',
+    price: 299, originalPrice: 479, stock: 80,
+    description: 'Anya Forger cute reaction face wall sticker. Heh!',
+    tags: ['spy x family', 'anime', 'anya'],
+    images: ['https://cdn.myanimelist.net/images/anime/1441/122795.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Vinland Saga Thorfinn Sticker',
+    price: 359, originalPrice: 569, stock: 33,
+    description: 'Thorfinn warrior silhouette wall sticker from Vinland Saga.',
+    tags: ['vinland saga', 'anime', 'thorfinn'],
+    images: ['https://cdn.myanimelist.net/images/anime/1500/103005.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'Re:Zero Rem Wall Sticker',
+    price: 349, originalPrice: 549, stock: 58,
+    description: 'Rem in her maid outfit wall sticker. A fan favourite from Re:Zero.',
+    tags: ['rezero', 'anime', 'rem'],
+    images: ['https://cdn.myanimelist.net/images/anime/1522/128039.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Haikyuu!! Spike Sticker',
+    price: 319, originalPrice: 509, stock: 62,
+    description: 'Hinata and Kageyama quick attack wall sticker for volleyball anime fans.',
+    tags: ['haikyuu', 'anime', 'volleyball'],
+    images: ['https://cdn.myanimelist.net/images/anime/7/76014.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+  {
+    name: 'Black Clover Asta Devil Sticker',
+    price: 339, originalPrice: 539, stock: 44,
+    description: 'Asta anti-magic devil form wall sticker from Black Clover.',
+    tags: ['black clover', 'anime', 'asta'],
+    images: ['https://cdn.myanimelist.net/images/anime/2/88336.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+  },
+  {
+    name: 'Steins;Gate Okabe Lab Sticker',
+    price: 349, originalPrice: 549, stock: 36,
+    description: 'El Psy Kongroo! Okabe Rintaro mad scientist wall sticker.',
+    tags: ['steins gate', 'anime', 'okabe'],
+    images: ['https://cdn.myanimelist.net/images/anime/5/73199.jpg'],
+    variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm'], allowCustomText: false },
+  },
+]
+
 const tshirts = [
   {
     name: 'Mandala Art Printed T-Shirt',
@@ -140,11 +335,12 @@ const tshirts = [
 ]
 
 async function seed() {
-  console.log('Seeding 16 products...\n')
   const all = [
     ...stickers.map((p) => ({ ...p, category: 'wall-sticker' })),
     ...tshirts.map((p) => ({ ...p, category: 'tshirt' })),
+    ...anime.map((p) => ({ ...p, category: 'anime' })),
   ]
+  console.log(`Seeding ${all.length} products...\n`)
   for (const product of all) {
     await db.collection('products').add({
       ...product,
@@ -154,7 +350,7 @@ async function seed() {
     })
     console.log('✓ Added:', product.name)
   }
-  console.log('\n✅ Done! 16 products seeded (8 stickers + 8 T-shirts)')
+  console.log(`\n✅ Done! ${all.length} products seeded (8 stickers + 8 T-shirts + 24 Anime)`)
   process.exit(0)
 }
 
