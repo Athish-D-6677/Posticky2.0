@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore'
 import { db } from '../firebase'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useSearchParams } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 
 const THEMES = [
@@ -26,13 +27,24 @@ const THEMES = [
 ]
 
 export default function Shop({ categoryFilter }) {
+  const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState([])
   const [search, setSearch] = useState('')
   const [priceMax, setPriceMax] = useState(5000)
   const [sort, setSort] = useState('newest')
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState(categoryFilter || 'all')
-  const [activeTheme, setActiveTheme] = useState('all')
+
+  // Read theme from URL so back button restores it
+  const activeTheme = searchParams.get('theme') || 'all'
+  const setActiveTheme = (val) => {
+    if (val === 'all') {
+      searchParams.delete('theme')
+      setSearchParams(searchParams, { replace: true })
+    } else {
+      setSearchParams({ theme: val }, { replace: true })
+    }
+  }
 
   useEffect(() => {
     const load = async () => {
@@ -64,6 +76,7 @@ export default function Shop({ categoryFilter }) {
       return 0
     })
 
+  const activeThemeLabel = THEMES.find(t => t.value === activeTheme)?.label || ''
   const pageTitle = categoryFilter === 'wall-sticker'
     ? 'Wall Stickers'
     : categoryFilter === 'tshirt'
@@ -92,7 +105,7 @@ export default function Shop({ categoryFilter }) {
             BROWSE
           </span>
           <h1 className="text-4xl md:text-5xl font-extrabold" style={{ fontFamily: 'Syne, sans-serif', color: '#f0f0f0' }}>
-            {pageTitle}
+            {activeTheme !== 'all' ? `${THEMES.find(t => t.value === activeTheme)?.icon} ${activeThemeLabel}` : pageTitle}
           </h1>
           <p className="mt-2 text-sm" style={{ color: '#666' }}>{filtered.length} products</p>
         </motion.div>
@@ -128,7 +141,6 @@ export default function Shop({ categoryFilter }) {
           className="flex flex-col md:flex-row gap-3 mb-6 p-4 rounded-2xl"
           style={{ background: '#111', border: '1px solid rgba(255,255,255,0.06)' }}
         >
-          {/* Search */}
           <div className="relative flex-1">
             <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4" style={{ color: '#555' }} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -144,14 +156,10 @@ export default function Shop({ categoryFilter }) {
               onBlur={e => e.target.style.borderColor = 'rgba(255,255,255,0.08)'}
             />
           </div>
-
-          {/* Price range */}
           <div className="flex items-center gap-3">
             <span className="text-xs whitespace-nowrap" style={{ color: '#666', fontFamily: 'DM Sans' }}>Max ₹{priceMax}</span>
             <input type="range" min={100} max={5000} step={100} value={priceMax} onChange={(e) => setPriceMax(Number(e.target.value))} className="w-28 accent-green-400" />
           </div>
-
-          {/* Sort */}
           <select
             value={sort}
             onChange={(e) => setSort(e.target.value)}

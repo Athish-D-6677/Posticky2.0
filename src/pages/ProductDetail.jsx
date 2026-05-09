@@ -25,6 +25,7 @@ export default function ProductDetail() {
   const [wishlisted, setWishlisted] = useState(false)
   const [adding, setAdding] = useState(false)
   const [lightbox, setLightbox] = useState(false)
+  const [rotation, setRotation] = useState(0)
 
   useEffect(() => {
     const load = async () => {
@@ -175,7 +176,7 @@ export default function ProductDetail() {
             <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
             </svg>
-            Back
+            Back to {product.category === 'tshirt' ? 'T-Shirts' : 'Stickers'}
           </button>
           <div className="flex items-center gap-2 text-xs" style={{ color: '#444', fontFamily: 'DM Sans, sans-serif' }}>
             <button onClick={() => navigate('/shop')} style={{ color: '#555' }}
@@ -194,13 +195,14 @@ export default function ProductDetail() {
             {/* Main image */}
             <div
               className="relative overflow-hidden rounded-3xl mb-3 cursor-zoom-in"
-              style={{ aspectRatio: '1/1', background: '#111', border: '1px solid rgba(255,255,255,0.07)' }}
+              style={{ background: '#111', border: '1px solid rgba(255,255,255,0.07)' }}
               onClick={() => setLightbox(true)}
             >
               <img
                 src={product.images?.[selectedImage] || 'https://placehold.co/600x600/111/333?text=POSTICKY'}
                 alt={product.name}
-                className="w-full h-full object-cover transition-all duration-500"
+                className="w-full transition-all duration-500"
+                style={{ display: 'block', objectFit: 'contain', maxHeight: '480px', width: '100%' }}
               />
               <div className="absolute bottom-3 right-3 px-2 py-1 rounded-lg text-xs font-bold" style={{ background: 'rgba(0,0,0,0.6)', color: '#aaa', backdropFilter: 'blur(10px)', fontFamily: 'Syne, sans-serif' }}>
                 🔍 Click to zoom
@@ -576,7 +578,7 @@ export default function ProductDetail() {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
             style={{ background: 'rgba(0,0,0,0.92)', backdropFilter: 'blur(20px)' }}
-            onClick={() => setLightbox(false)}
+            onClick={() => { setLightbox(false); setRotation(0) }}
           >
             <motion.div
               initial={{ scale: 0.9 }}
@@ -588,12 +590,12 @@ export default function ProductDetail() {
               <img
                 src={product.images?.[selectedImage]}
                 alt={product.name}
-                className="w-full rounded-2xl object-contain"
-                style={{ maxHeight: '80vh' }}
+                className="w-full rounded-2xl object-contain transition-transform duration-300"
+                style={{ maxHeight: '80vh', transform: `rotate(${rotation}deg)` }}
               />
               {/* Close */}
               <button
-                onClick={() => setLightbox(false)}
+                onClick={() => { setLightbox(false); setRotation(0) }}
                 className="absolute top-3 right-3 w-9 h-9 flex items-center justify-center rounded-full"
                 style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
               >
@@ -601,11 +603,22 @@ export default function ProductDetail() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
+              {/* Rotate button */}
+              <button
+                onClick={() => setRotation(r => (r + 90) % 360)}
+                className="absolute top-3 left-3 w-9 h-9 flex items-center justify-center rounded-full"
+                style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
+                title="Rotate 90°"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
               {/* Prev / Next arrows for multiple images */}
               {product.images?.length > 1 && (
                 <>
                   <button
-                    onClick={() => setSelectedImage(i => (i - 1 + product.images.length) % product.images.length)}
+                    onClick={() => { setSelectedImage(i => (i - 1 + product.images.length) % product.images.length); setRotation(0) }}
                     className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full"
                     style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
                   >
@@ -614,7 +627,7 @@ export default function ProductDetail() {
                     </svg>
                   </button>
                   <button
-                    onClick={() => setSelectedImage(i => (i + 1) % product.images.length)}
+                    onClick={() => { setSelectedImage(i => (i + 1) % product.images.length); setRotation(0) }}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full"
                     style={{ background: 'rgba(0,0,0,0.7)', border: '1px solid rgba(255,255,255,0.15)', color: '#fff' }}
                   >
