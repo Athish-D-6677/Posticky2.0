@@ -516,6 +516,111 @@ const TSHIRTS = [
   { name: 'Posticky OG Logo Tee', description: 'Official Posticky brand tee. Embroidered logo on chest. 100% combed cotton 220 GSM.', category: 'tshirt', price: 499, originalPrice: 699, stock: 150, isActive: true, isNew: false, rating: 4.7, reviewCount: 412, tags: ['brand', 'logo', 'classic', 'everyday'], images: ['https://placehold.co/500x600/0a0a0a/00ff88?text=Posticky+OG'], variants: { sizes: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'XXXL'], colors: ['Black', 'White', 'Olive Green', 'Charcoal'], allowCustomText: false } },
   
 ]
+import { createRequire as _req } from 'module'
+import fs from 'fs'
+import path from 'path'
+
+const IMAGES_DIR = 'C:\\Users\\91948\\Downloads\\drive-download-20260515T202724Z-3-001'
+const BATCH_SIZE = 5
+const DELAY_MS = 3000
+
+const QUOTE_NAMES = [
+  'Dream Big Work Hard Quote Sticker', 'Hustle Never Stops Quote Sticker',
+  'Be The Change Quote Sticker', 'Stay Focused Quote Sticker',
+  'Never Give Up Quote Sticker', 'Chase Your Dreams Quote Sticker',
+  'Work In Silence Quote Sticker', 'Believe In Yourself Quote Sticker',
+  'Rise And Grind Quote Sticker', 'Make It Happen Quote Sticker',
+  'Stay Hungry Stay Foolish Quote Sticker', 'Do What You Love Quote Sticker',
+  'Success Is A Journey Quote Sticker', 'Think Big Act Bold Quote Sticker',
+  'Be Fearless Quote Sticker', 'Create Your Own Path Quote Sticker',
+  'Stay Positive Quote Sticker', 'Push Your Limits Quote Sticker',
+  'Live Your Best Life Quote Sticker', 'No Pain No Gain Quote Sticker',
+  'Inspire Others Quote Sticker', 'Be The Best Version Quote Sticker',
+  'Keep Going Quote Sticker', 'Dare To Be Different Quote Sticker',
+  'Make Every Day Count Quote Sticker', 'Born To Stand Out Quote Sticker',
+  'Embrace The Journey Quote Sticker', 'Stay Wild Quote Sticker',
+  'Good Vibes Only Quote Sticker', 'Live Laugh Love Quote Sticker',
+  'Be Kind Always Quote Sticker', 'Spread Positivity Quote Sticker',
+  'You Got This Quote Sticker', 'Shine Bright Quote Sticker',
+  'Be The Light Quote Sticker', 'Grow Through What You Go Through Quote Sticker',
+  'Stronger Every Day Quote Sticker', 'Mindset Is Everything Quote Sticker',
+  'Focus On The Good Quote Sticker', 'Energy Is Everything Quote Sticker',
+  'Manifest Your Dreams Quote Sticker', 'Gratitude Changes Everything Quote Sticker',
+  'Progress Over Perfection Quote Sticker', 'Start Before You Are Ready Quote Sticker',
+  'Consistency Is Key Quote Sticker', 'Discipline Equals Freedom Quote Sticker',
+  'One Day Or Day One Quote Sticker', 'Do It With Passion Quote Sticker',
+  'Your Only Limit Is You Quote Sticker', 'Make Your Mark Quote Sticker',
+]
+
+const PRICES = [199, 249, 299, 349, 399]
+const ORIGINAL_PRICES = [349, 399, 499, 549, 599]
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)) }
+
+async function uploadQuoteImages() {
+  const bucket = admin.storage().bucket('posticky-84758.appspot.com')
+  const files = fs.readdirSync(IMAGES_DIR).filter(f =>
+    f.endsWith('.jpg') || f.endsWith('.webp') || f.endsWith('.png')
+  )
+
+  console.log(`\n📸 Uploading ${files.length} quote images in batches of ${BATCH_SIZE}...\n`)
+
+  for (let i = 0; i < files.length; i += BATCH_SIZE) {
+    const batch = files.slice(i, i + BATCH_SIZE)
+    console.log(`📦 Batch ${Math.floor(i / BATCH_SIZE) + 1}: files ${i + 1}–${i + batch.length}`)
+
+    for (let j = 0; j < batch.length; j++) {
+      const globalIndex = i + j
+      const file = batch[j]
+      const filePath = path.join(IMAGES_DIR, file)
+      const ext = path.extname(file)
+      const destPath = `products/quotes/${globalIndex + 1}${ext}`
+      const name = QUOTE_NAMES[globalIndex] || `Quote Wall Sticker ${globalIndex + 1}`
+      const priceIdx = globalIndex % PRICES.length
+
+      try {
+        console.log(`  ⬆️  ${file}`)
+        const contentType = ext === '.webp' ? 'image/webp' : ext === '.png' ? 'image/png' : 'image/jpeg'
+        await bucket.upload(filePath, { destination: destPath, metadata: { contentType } })
+        await bucket.file(destPath).makePublic()
+        const imageUrl = `https://storage.googleapis.com/posticky-84758.firebasestorage.app/${destPath}`
+
+        const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+        await db.collection('products').doc(slug).set({
+          name,
+          category: 'wall-sticker',
+          theme: 'quotes',
+          price: PRICES[priceIdx],
+          originalPrice: ORIGINAL_PRICES[priceIdx],
+          stock: 50,
+          description: 'Premium quality wall sticker with inspiring quote. Easy peel and stick. Waterproof and long lasting.',
+          tags: ['quotes', 'motivational', 'wall sticker', 'inspiration'],
+          images: [imageUrl],
+          variants: { stickerSizes: ['30x30cm', '45x45cm', '60x60cm', '90x90cm'], allowCustomText: false },
+          isActive: true,
+          isNew: true,
+          rating: 4.8,
+          reviewCount: 0,
+          couponIds: [],
+          slug,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+        })
+        console.log(`  ✅ Added: ${name} — ₹${PRICES[priceIdx]}`)
+      } catch (err) {
+        console.error(`  ❌ Failed: ${file} — ${err.message}`)
+      }
+    }
+
+    if (i + BATCH_SIZE < files.length) {
+      console.log(`\n⏳ Waiting ${DELAY_MS / 1000}s...\n`)
+      await sleep(DELAY_MS)
+    }
+  }
+
+  console.log(`\n✅ Quote images upload complete!`)
+}
+
 async function seedProducts() {
   console.log('🌱 Starting Posticky product seed (Admin SDK)...\n')
 
@@ -548,6 +653,9 @@ async function seedProducts() {
   }
 
   console.log(`\n🎉 Done! ${count}/${allProducts.length} products added to Firestore.`)
+
+  // Upload 50 quote images 5 by 5
+  await uploadQuoteImages()
 
   process.exit(0)
 }
