@@ -1,4 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
+import logo from '../assets/logo.png'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useState, useEffect } from 'react'
@@ -52,6 +53,7 @@ export default function Navbar() {
 
         {/* Logo */}
         <Link to="/" className="shrink-0 flex items-center gap-2">
+          <img src={logo} alt="Posticky Logo" style={{ height: '2rem', width: 'auto' }} className="object-contain" />
           <span
             className="text-xl font-extrabold tracking-widest"
             style={{
