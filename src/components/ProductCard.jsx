@@ -43,9 +43,15 @@ export default function ProductCard({ product }) {
     }
   }
 
+  const saveScroll = () => {
+    const key = `scrollPos_${product.category === 'tshirt' ? 'tshirt' : product.category === 'wall-sticker' ? 'wall-sticker' : 'shop'}`
+    sessionStorage.setItem(key, window.scrollY)
+  }
+
   return (
     <Link
       to={`/product/${product.id}`}
+      onClick={saveScroll}
       className="group relative flex flex-col overflow-hidden rounded-2xl transition-all duration-300"
       style={{
         background: '#111',

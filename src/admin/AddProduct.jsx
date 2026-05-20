@@ -13,27 +13,22 @@ import { db } from '../firebase'
 import axios from 'axios'
 import { motion } from 'framer-motion'
 
-const TSHIRT_SIZES = ['S', 'M', 'L', 'XL', 'XXL']
+const TSHIRT_SIZES = ['Oversize']
 const STICKER_SIZES = ['30x30cm', '45x45cm', '60x60cm', '90x90cm']
 
-const THEMES = [
-  'Movie',
-  'Series',
-  'Music',
-  'Car',
-  'Bike',
-  'Gaming',
-  'Anime',
-  'Quotes',
-  'Gym',
-  'Sports',
-  'Superheroes',
-  'Nature',
-  'Mandala',
-  'Abstract',
-  'Minimal',
-  'Vintage',
-  'Combo',
+const STICKER_THEMES = [
+  'Movie', 'Series', 'Music', 'Car', 'Bike', 'Gaming', 'Anime',
+  'Quotes', 'Gym', 'Sports', 'Superheroes', 'Nature', 'Mandala',
+  'Abstract', 'Minimal', 'Vintage', 'Combo',
+]
+
+const TSHIRT_THEMES = [
+  { label: 'Tech/Programmer Streetwear', value: 'tech-programmer' },
+  { label: 'Tamil Culture Streetwear', value: 'tamil-culture' },
+  { label: 'Anime Streetwear', value: 'anime-streetwear' },
+  { label: 'Meme', value: 'meme' },
+  { label: 'Aesthetic', value: 'aesthetic' },
+  { label: 'Dark Cyberpunk', value: 'dark-cyberpunk' },
 ]
 
 const defaultForm = {
@@ -271,17 +266,9 @@ export default function AddProduct() {
               onChange={set('theme')}
               className="input"
             >
-              <option value="">
-                Select Theme
-              </option>
-
-              {THEMES.map((t) => (
-                <option
-                  key={t}
-                  value={t.toLowerCase()}
-                >
-                  {t}
-                </option>
+              <option value="">Select Theme</option>
+              {(form.category === 'tshirt' ? TSHIRT_THEMES : STICKER_THEMES.map(t => ({ label: t, value: t.toLowerCase() }))).map((t) => (
+                <option key={t.value} value={t.value}>{t.label}</option>
               ))}
             </select>
           </div>

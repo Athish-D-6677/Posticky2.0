@@ -305,28 +305,51 @@ export default function ProductDetail() {
             <div className="h-px" style={{ background: 'rgba(255,255,255,0.06)' }} />
 
             {/* Size selector */}
-            {allSizes.length > 0 && (
+            {(allSizes.length > 0 || product.category === 'tshirt') && (
               <div>
                 <p className="text-xs font-bold mb-3 tracking-widest" style={{ color: '#888', fontFamily: 'Syne, sans-serif' }}>
                   {product.category === 'tshirt' ? 'SELECT SIZE' : 'SELECT STICKER SIZE'}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {allSizes.map(s => (
-                    <button
-                      key={s}
-                      onClick={() => setSelectedSize(s)}
-                      className="px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200"
-                      style={{
-                        fontFamily: 'Syne, sans-serif',
-                        background: selectedSize === s ? 'rgba(0,255,136,0.15)' : 'rgba(255,255,255,0.04)',
-                        border: selectedSize === s ? '1px solid rgba(0,255,136,0.5)' : '1px solid rgba(255,255,255,0.1)',
-                        color: selectedSize === s ? '#00ff88' : '#888',
-                        boxShadow: selectedSize === s ? '0 0 12px rgba(0,255,136,0.2)' : 'none',
-                      }}
-                    >
-                      {s}
-                    </button>
-                  ))}
+                  {(product.category === 'tshirt'
+                    ? ['S', 'M', 'L', 'XL', 'XXL', 'Oversize']
+                    : allSizes
+                  ).map(s => {
+                    const isOversize = s === 'Oversize'
+                    const comingSoon = product.category === 'tshirt' && !isOversize
+                    return (
+                      <div key={s} className="relative">
+                        <button
+                          onClick={() => !comingSoon && setSelectedSize(s)}
+                          disabled={comingSoon}
+                          className="px-4 py-2 rounded-xl text-sm font-bold transition-all duration-200"
+                          style={{
+                            fontFamily: 'Syne, sans-serif',
+                            background: comingSoon
+                              ? 'rgba(255,255,255,0.02)'
+                              : selectedSize === s ? 'rgba(0,255,136,0.15)' : 'rgba(255,255,255,0.04)',
+                            border: comingSoon
+                              ? '1px solid rgba(255,255,255,0.05)'
+                              : selectedSize === s ? '1px solid rgba(0,255,136,0.5)' : '1px solid rgba(255,255,255,0.1)',
+                            color: comingSoon ? '#333' : selectedSize === s ? '#00ff88' : '#888',
+                            boxShadow: selectedSize === s && !comingSoon ? '0 0 12px rgba(0,255,136,0.2)' : 'none',
+                            cursor: comingSoon ? 'not-allowed' : 'pointer',
+                            textDecoration: comingSoon ? 'line-through' : 'none',
+                          }}
+                        >
+                          {s}
+                        </button>
+                        {comingSoon && (
+                          <span
+                            className="absolute -top-2 -right-1 text-[8px] font-bold px-1 rounded"
+                            style={{ background: '#1a1a1a', color: '#444', fontFamily: 'Syne, sans-serif', border: '1px solid rgba(255,255,255,0.06)', whiteSpace: 'nowrap' }}
+                          >
+                            SOON
+                          </span>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             )}

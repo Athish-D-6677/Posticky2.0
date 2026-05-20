@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useSearchParams } from 'react-router-dom'
 import ProductCard from '../components/ProductCard'
 
-const THEMES = [
+const STICKER_THEMES = [
   { label: 'All', value: 'all', icon: '✨' },
   { label: 'Movie', value: 'movie', icon: '🎬' },
   { label: 'Series', value: 'series', icon: '📺' },
@@ -26,6 +26,16 @@ const THEMES = [
   { label: 'Combo', value: 'combo', icon: '🎁' },
 ]
 
+const TSHIRT_THEMES = [
+  { label: 'All', value: 'all', icon: '✨' },
+  { label: 'Tech/Programmer', value: 'tech-programmer', icon: '💻' },
+  { label: 'Tamil Culture', value: 'tamil-culture', icon: '🪔' },
+  { label: 'Anime Streetwear', value: 'anime-streetwear', icon: '⛩️' },
+  { label: 'Meme', value: 'meme', icon: '😂' },
+  { label: 'Aesthetic', value: 'aesthetic', icon: '🌸' },
+  { label: 'Dark Cyberpunk', value: 'dark-cyberpunk', icon: '🤖' },
+]
+
 export default function Shop({ categoryFilter }) {
   const [searchParams, setSearchParams] = useSearchParams()
   const [products, setProducts] = useState([])
@@ -34,8 +44,10 @@ export default function Shop({ categoryFilter }) {
   const [sort, setSort] = useState('newest')
   const [loading, setLoading] = useState(true)
   const [activeCategory, setActiveCategory] = useState(categoryFilter || 'all')
+  const scrollKey = `scrollPos_${categoryFilter || 'shop'}`
 
   // Read theme from URL so back button restores it
+  const THEMES = categoryFilter === 'tshirt' ? TSHIRT_THEMES : STICKER_THEMES
   const activeTheme = searchParams.get('theme') || 'all'
   const setActiveTheme = (val) => {
     if (val === 'all') {
@@ -45,6 +57,17 @@ export default function Shop({ categoryFilter }) {
       setSearchParams({ theme: val }, { replace: true })
     }
   }
+
+  // Restore scroll position after products load
+  useEffect(() => {
+    if (!loading) {
+      const saved = sessionStorage.getItem(scrollKey)
+      if (saved) {
+        setTimeout(() => window.scrollTo({ top: Number(saved), behavior: 'instant' }), 50)
+        sessionStorage.removeItem(scrollKey)
+      }
+    }
+  }, [loading, scrollKey])
 
   useEffect(() => {
     const load = async () => {
