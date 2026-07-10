@@ -5,6 +5,8 @@ import { auth } from '../firebase'
 import { useAuth } from '../context/AuthContext'
 import { motion, AnimatePresence } from 'framer-motion'
 
+
+
 export default function AdminLogin() {
   const navigate = useNavigate()
   const { user, isAdmin, loading } = useAuth()

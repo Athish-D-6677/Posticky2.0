@@ -11,6 +11,8 @@ async function activateDemoTshirts() {
 
   if (snap.empty) { console.log('No inactive tshirts found'); return }
 
+
+  
   const docs = snap.docs
   console.log(`Found ${docs.length} inactive t-shirts`)
 

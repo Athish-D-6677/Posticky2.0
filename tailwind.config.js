@@ -14,6 +14,7 @@ export default {
           pink: '#ff2d78',
           blue: '#00d4ff',
         },
+        
         dark: {
           bg: '#080808',
           card: '#111111',
